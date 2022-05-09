@@ -164,7 +164,7 @@ elif [[ $1 = "status" ]]; then
 	status $online status
 	status $is_fault is_fault
 
-elif [ $1 = "test" ]; then
+elif [[ $1 = "test" ]]; then
 	curl -s -H "Content-Type: application/json; charset=utf-8" \
 	-H "x-token: $token" \
 	-d '{"device_code":"'$device'","protocal_codes":["'$2'"]}' \
@@ -172,7 +172,7 @@ elif [ $1 = "test" ]; then
 	cat $path/tmp/test
 
 
-elif [ $1 = "info" ]; then
+elif [[ $1 = "info" ]]; then
 	echo info
 	curl -s -H "Content-Type: application/json; charset=utf-8" \
 	-H "x-token: $token" \
