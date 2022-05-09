@@ -16,28 +16,28 @@ do
 	settemp=`echo $line | grep "$name"_settemp/state | rev | cut -d ' ' -f1 | rev`
 	mode=`echo $line | grep "$name"_mode_set/state | rev | cut -d ' ' -f1 | rev`
 	silent=`echo $line | grep "$name"_silent/set | rev | cut -d ' ' -f1 | rev`
-	if [ ! -z $settemp ]; then
+	if [[ ! -z $settemp ]]; then
 		$path/heatpump temp $settemp
 		check
 	fi
-	if [ ! -z $silent ]; then
+	if [[ ! -z $silent ]]; then
 		$path/heatpump silent $silent
 		check
 	fi	
-	if [ ! -z $mode ]; then
+	if [[ ! -z $mode ]]; then
 		echo $line
-		if [ $mode = "off" ]; then
+		if [[ $mode = "off" ]]; then
 			$path/heatpump off
 			check
-		elif [ $mode = "heat" ]; then
+		elif [[ $mode = "heat" ]]; then
 			$path/heatpump on
 			$path/heatpump mode heat
 			check
-		elif [ $mode = "auto" ]; then
+		elif [[ $mode = "auto" ]]; then
 			$path/heatpump on
 			$path/heatpump mode auto
 			check
-		elif [ $mode = "cool" ]; then
+		elif [[ $mode = "cool" ]]; then
 			$path/heatpump on
 			$path/heatpump mode cool
 			check

@@ -30,7 +30,7 @@ echo $device > $path/tmp/device
 }
 
 check=`find $path/tmp/token -newermt '-86400 seconds' | wc -l`
-if [ $check -lt "1" ]; then
+if [[ $check -lt "1" ]]; then
         update
 fi
 
@@ -47,7 +47,7 @@ power()
 }
 
 #Install entities to Hass
-if [ $1 = "install" ]; then
+if [[ $1 = "install" ]]; then
 	echo install
 
 	install()
@@ -104,7 +104,7 @@ if [ $1 = "install" ]; then
 			"modes":["off", "heat", "cool", "auto"]}'
 
 #uninstall entities from Hass
-elif [ $1 = "uninstall" ]; then
+elif [[ $1 = "uninstall" ]]; then
 	echo uninstall
 	uninstall()
 	{
@@ -129,7 +129,7 @@ elif [ $1 = "uninstall" ]; then
 
 	mosquitto_pub -r -h $mqtt -p $mqttport -u $mqttuser -P $mqttpass -m '' -t "homeassistant/climate/$name/config"
 
-elif [ $1 = "status" ]; then
+elif [[ $1 = "status" ]]; then
 	curl -s -H "Content-Type: application/json; charset=utf-8" \
 	-H "x-token: $token" \
 	-d '{"device_code":"'$device'"}' \
@@ -137,7 +137,7 @@ elif [ $1 = "status" ]; then
 
 	online=`cat $path/tmp/status | jq -r '.object_result."status"'`
 	is_fault=`cat $path/tmp/status | jq -r '.object_result."is_fault"'`
-	if [ $is_fault = "true" ];then
+	if [[ $is_fault = "true" ]];then
 		curl -s -H "Content-Type: application/json; charset=utf-8" \
 		-H "x-token: $token" \
 		-d '{"device_code":"'$device'"}' \
@@ -147,7 +147,7 @@ elif [ $1 = "status" ]; then
 			-m "${error_msg}" \
 			-t "homeassistant/sensor/"$name"_error_msg/state"
 
-	elif [ $is_fault = "false" ];then
+	elif [[ $is_fault = "false" ]];then
 		error_msg="No Error"
 		mosquitto_pub -r -h $mqtt -p $mqttport -u $mqttuser -P $mqttpass \
 			-m "${error_msg}" \
@@ -204,49 +204,49 @@ mosquitto_status()
 	mosquitto_status sensor $coiltemp coil
 	mosquitto_status sensor $suctiontemp suction
 
-	if [ $silent = "0" ];then
+	if [[ $silent = "0" ]];then
 
 		mosquitto_status binary_sensor OFF silent
 
-	elif [ $silent = "1" ];then
+	elif [[ $silent = "1" ]];then
 		mosquitto_status binary_sensor ON silent
 	fi
 
 
-	if [ $power = "0" ];then
+	if [[ $power = "0" ]];then
 		mosquitto_status sensor off mode_state
 		mosquitto_status binary_sensor OFF power
 
-	elif [ $power = "1" ];then
+	elif [[ $power = "1" ]];then
 		mosquitto_status binary_sensor ON power
-		if [ $mode = "0" ];then
+		if [[ $mode = "0" ]];then
 			mosquitto_status sensor cool mode_state
-		elif [ $mode = "1" ];then
+		elif [[ $mode = "1" ]];then
 			mosquitto_status sensor heat mode_state
-		elif [ $mode = "2" ];then
+		elif [[ $mode = "2" ]];then
 			mosquitto_status sensor auto mode_state
 		fi
 	fi
 
 #control
 
-elif [ $1 = "on" ]; then
+elif [[ $1 = "on" ]]; then
 	power 1
 
-elif [ $1 = "off" ]; then
+elif [[ $1 = "off" ]]; then
 	power 0
 
-elif [ $1 = "temp" ]; then
+elif [[ $1 = "temp" ]]; then
 	temp=$2
 	curl -s -H "Content-Type: application/json; charset=utf-8" \
 	-H "x-token: $token" \
 	-d '{"param":[{"device_code":"'$device'","protocol_code":"R02","value":"'$temp'"},{"device_code":"'$device'","protocol_code":"Set_Temp","value":"'$temp'"}]}' \
 	-X POST $cloudurl/app/device/control.json
 
-elif [ $1 = "silent" ]; then
-	if [ $2 = "ON" ];then
+elif [[ $1 = "silent" ]]; then
+	if [[ $2 = "ON" ]];then
 		mode="1"
-	elif [ $2 = "OFF" ];then
+	elif [[ $2 = "OFF" ]];then
 		mode="0"
 	fi
 	curl -s -H "Content-Type: application/json; charset=utf-8" \
@@ -254,7 +254,7 @@ elif [ $1 = "silent" ]; then
 	-d '{"param":[{"device_code":"'$device'","protocol_code":"Manual-mute","value":"'$mode'"}]}' \
 	-X POST $cloudurl/app/device/control.json
 
-elif [ $1 = "mode" ]; then
+elif [[ $1 = "mode" ]]; then
 
 	mode()
 	{
@@ -264,15 +264,15 @@ elif [ $1 = "mode" ]; then
                 -X POST $cloudurl/app/device/control.json
 	}
 
-	if [ $2 = "heat" ];then
+	if [[ $2 = "heat" ]];then
 		mode="1"
 		mode
 
-	elif [ $2 = "cool" ];then
+	elif [[ $2 = "cool" ]];then
 		mode="0"
 		mode
 
-	elif [ $2 = "auto" ];then
+	elif [[ $2 = "auto" ]];then
 		mode="2"
 		mode
 	fi
